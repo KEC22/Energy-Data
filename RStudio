@@ -1,8 +1,12 @@
-# Loading Data
-household <- read.csv("~/Desktop/UTDataAnalytics/R Language/Define a Data Science Process/household.txt", sep=";")
+setwd("~/Desktop/Energy")
+install.packages("dplyr")
+install.packages("tidyr")
+library(dplyr)
+library(tidyr)
 
-#Preprocessing:
-#To convert data to numeric
+household <- read.csv("household_power_consumption.txt", sep=";", stringsAsFactors = FALSE, header=TRUE)
+summary(household)
+
 household$Global_active_power<-as.numeric(household$Global_active_power)
 household$Global_reactive_power<-as.numeric(household$Global_reactive_power)
 household$Voltage<-as.numeric(household$Voltage)
@@ -11,19 +15,21 @@ household$Sub_metering_1<-as.numeric(household$Sub_metering_1)
 household$Sub_metering_2<-as.numeric(household$Sub_metering_2)
 household$Sub_metering_3<-as.numeric(household$Sub_metering_3)
 
-#To address missing values:
-MissingData <- na.omit(household)
-# &
-household$Global_active_power[is.na(household$Global_active_power)] <-mean(household$Global_active_power) household$Global_reactive_power[is.na(household$Global_reactive_power)] <- mean(household$Global_reactive_power)
-household$Voltage[is.na(household$Voltage)] <- mean(household$Voltage)
-household$Global_intensity[is.na(household$Global_intensity)] <- mean(household$Global_intensity)
-household$Sub_metering_1[is.na(household$Sub_metering_1)]<-mean(household$Sub_metering_1)
-household$Sub_metering_2[is.na(household$Sub_metering_2)]<-mean(household$Sub_metering_2)
-household$Sub_metering_3[is.na(household$Sub_metering_3)]<-mean(household$Sub_metering_3)
-#(I experimented with both.)
- 
-#To address "Date" format:
-household$Date <- as.Date(household$Date, format="%d/%m/%Y")
+household<- subset(household, !(is.na(Sub_metering_1)| is.na(Sub_metering_2)| is.na(Sub_metering_3)| is.na(Global_active_power)| is.na(Global_reactive_power)| is.na(Global_active_power)| is.na(Voltage)| is.na(Time)| is.na(Date)))
+
+household <-cbind(household,paste(household$Date,household$Time), stringsAsFactors=FALSE)
+colnames(household)[10] <-"DateTime"
+household <- household[,c(ncol(household), 1:(ncol(household)-1))]
+head(household)
+
+household$DateTime <- strptime(household$DateTime, "%d/%m/%Y %H:%M:%S")
+household$Date <- as.Date(household$Date, "%d/%m/%Y")
+str(household)
+
+summary(household)
+sd(household$Sub_metering_1)
+var(household$Sub_metering_1)
+mean(household$Sub_metering_1)
 
 #Here is the route that I took in Rstudio for forcasting and graphing:
  
