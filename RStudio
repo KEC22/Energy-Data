@@ -70,4 +70,3 @@ HWplot(demand, n.ahead = 12)
 graph <- HWplot(demand, n.ahead = 12, error.ribbon = "red")
 graph <- graph + scale_x_continuous(breaks = seq(2000, 2012))
 plot(graph)
-Contact GitHub API Training Shop Blog About
